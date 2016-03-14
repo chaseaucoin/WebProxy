@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{A59FD8A1-9
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProxy.Tests", "WebProxy.Tests\WebProxy.Tests.csproj", "{40F7ACD1-1597-4675-AF04-79D3709EB5A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{37A7895F-FB96-4CFC-9DDA-F1948A09B153}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37A7895F-FB96-4CFC-9DDA-F1948A09B153}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37A7895F-FB96-4CFC-9DDA-F1948A09B153}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40F7ACD1-1597-4675-AF04-79D3709EB5A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40F7ACD1-1597-4675-AF04-79D3709EB5A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40F7ACD1-1597-4675-AF04-79D3709EB5A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40F7ACD1-1597-4675-AF04-79D3709EB5A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
