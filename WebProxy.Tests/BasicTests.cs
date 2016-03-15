@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace WebProxy.Tests
 {
@@ -33,7 +34,7 @@ namespace WebProxy.Tests
         {
             var expectedResult = new string[] { "value1", "value2" };
             
-            var results = proxy.Get().ToArray();
+            var results = proxy.GetList().ToArray();
 
             for( int i=0; i < expectedResult.Count(); i++)
             {
@@ -46,7 +47,7 @@ namespace WebProxy.Tests
         {
             var expectedResult = "value";
             
-            var result = proxy.Get(12);            
+            var result = proxy.BasicValue(12);            
                 Assert.AreEqual(result, expectedResult);            
         }
 
@@ -56,6 +57,15 @@ namespace WebProxy.Tests
             var expectedResult = Guid.NewGuid().ToString();
 
             var result = proxy.Post(expectedResult);
+            Assert.AreEqual(result, expectedResult);
+        }
+
+        [TestMethod]
+        public async Task CanProxyGetAsync()
+        {
+            var expectedResult = "value";
+
+            var result = await proxy.GetStringAsync();
             Assert.AreEqual(result, expectedResult);
         }
     }

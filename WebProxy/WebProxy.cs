@@ -1,6 +1,7 @@
 ﻿using CupcakeFactory.SimpleProxy;
 using JsonNet.GenericTypes;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -51,8 +52,8 @@ namespace WebProxy
             using (HttpClient client = new HttpClient())
             using (HttpResponseMessage response = client.GetAsync(page).Result)
             using (HttpContent content = response.Content)
-            {   
-                swaggerDoc = content.ReadAsStringAsync().Result;                
+            {
+                swaggerDoc = content.ReadAsStringAsync().Result;
             }
 
             _proxyDef = parser.ParseSwaggerDocument(swaggerDoc);
@@ -67,7 +68,7 @@ namespace WebProxy
                 .Where(operation =>
                     operation.OperationId == methodBase.Name)
                 .Where(operation =>
-                    ( parameterCollection.Count() == 0 && operation.Parameters.Count == 0 )
+                    (parameterCollection.Count() == 0 && operation.Parameters.Count == 0)
                     ||
                     parameterCollection.Select(x => x.Name)
                         .Any(x => operation.Parameters.Select(y => y.Type.Name).Contains(x))
@@ -90,26 +91,62 @@ namespace WebProxy
                     .Parameters
                     .Where(x => x.ParameterIn == ParameterIn.Body)
                     .Select(x => parameterCollection.FirstOrDefault(arg => arg.Name == x.Type.Name))
-                    .FirstOrDefault();            
+                    .FirstOrDefault();
 
-            if (swaggerOperation.Method.ToLower() == "get")
+            HttpMethod httpmethod = null;
+            
+            switch (swaggerOperation.Method.ToLower())
             {
-                serializedResponse = Dispatch(HttpMethod.Get, page, queryParams, null, bodyParam).Result;
+                case "post" :
+                    httpmethod = HttpMethod.Post;
+                    break;
+
+                case "get" :
+                    httpmethod = HttpMethod.Get;
+                    break;
+
+                default: break;
             }
 
-            if (swaggerOperation.Method.ToLower() == "post")
-            {                
-                serializedResponse = Dispatch(HttpMethod.Post, page, queryParams, null, bodyParam).Result;
-            }
+            object returnObj = null;
 
-            var returnObj = JsonConvert.DeserializeObject(serializedResponse, methodInfo.ReturnType);
+            if (methodInfo.ReturnType.IsSubclassOf(typeof(Task)) 
+                && 
+                methodInfo.ReturnType.GetGenericArguments().Count() > 0)
+            {
+                var genericReturnType = methodInfo.ReturnType.GetGenericArguments()[0];
+
+                object[] args = new object[] { httpmethod, page, queryParams, null, bodyParam };
+
+                var dispatchMethod = this.GetType()
+                    .GetMethod("Dispatch", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                returnObj = dispatchMethod
+                    .MakeGenericMethod(genericReturnType)
+                    .Invoke(this, args);
+            }
+            else
+            {
+                object[] args = new object[] { httpmethod, page, queryParams, null, bodyParam };
+
+                var dispatchMethod = this.GetType()
+                    .GetMethod("Dispatch", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                var dispatchTask = dispatchMethod
+                    .MakeGenericMethod(methodInfo.ReturnType)
+                    .Invoke(this, args) as Task;
+
+                returnObj = dispatchTask.GetType()
+                    .GetProperty("Result")
+                    .GetValue(dispatchTask);
+            }
             
             return returnObj;
         }
 
-        private async Task<string> Dispatch(HttpMethod method, string methodPath, IEnumerable<MethodParameter> queryParams = null, IEnumerable<MethodParameter> headers = null, MethodParameter body = null)
+        private async Task<K> Dispatch<K>(HttpMethod method, string methodPath, IEnumerable<MethodParameter> queryParams = null, IEnumerable<MethodParameter> headers = null, MethodParameter body = null)
         {
-            if (queryParams != null)
+            if (queryParams != null && queryParams.Count() > 0)
             {
                 methodPath = CreatePath(methodPath, queryParams);
             }
@@ -122,18 +159,20 @@ namespace WebProxy
             {
                 var serializedBody = JsonConvert.SerializeObject(body.Value);
                 requestMessage.Content = new StringContent(serializedBody, Encoding.UTF8, "application/json");
-            }            
+            }
 
             responseBody = await SendRequestMessage(requestMessage);
 
-            return responseBody;
+            var deserializedResponse = JsonConvert.DeserializeObject<K>(responseBody);
+
+            return deserializedResponse;
         }
 
         private async Task<string> SendRequestMessage(HttpRequestMessage requestMessage)
         {
             var responseBody = string.Empty;
 
-            requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));            
+            requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             using (HttpResponseMessage response = await client.SendAsync(requestMessage))
             using (HttpContent content = response.Content)

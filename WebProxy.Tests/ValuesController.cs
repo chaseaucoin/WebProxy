@@ -10,15 +10,25 @@ namespace WebProxy.Tests
     public class ValuesController : ApiController, IValuesController
     {
         // GET api/values 
-        public IEnumerable<string> Get()
+        public IEnumerable<string> GetList()
         {
             return new string[] { "value1", "value2" };
         }
 
         // GET api/values/5 
-        public string Get(int id)
+        public string BasicValue(int id)
         {
             return "value";
+        }
+
+        public Task DoSomeStuff()
+        {
+            return Task.Run(() => { });
+        }
+
+        public Task<string> GetStringAsync()
+        {
+            return  Task.FromResult("value");
         }
 
         // POST api/values 
