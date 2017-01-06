@@ -33,8 +33,8 @@ public void Configuration(IAppBuilder appBuilder)
         c.SingleApiVersion("v1", "A title for your API");
         c.UseFullTypeNameInSchemaIds();
         c.ResolveConflictingActions(apiDescriptions => apiDescriptions.FirstOrDefault());
-    })
-        .EnableSwaggerUi(); //for debugging purposes
+
+    });	
 
     config.Routes.MapHttpRoute(
         name: "DefaultApi",
