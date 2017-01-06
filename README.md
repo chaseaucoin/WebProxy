@@ -50,7 +50,7 @@ public void Configuration(IAppBuilder appBuilder)
 ```csharp
 public async Task DoTheThing()
 {
-	var proxy = new WebProxy<IValuesController>()
+	var proxy = new WebProxy<ISomeService>()
             .CreateProxy("http://somerooturl.org/", "swagger/docs/v1");
 
 	SomeObject someObject = proxy.GetSomeObject();
@@ -60,5 +60,7 @@ public async Task DoTheThing()
 	SomeOtherObject someOtherObject = await proxy.GetSomeOtherObjectAsync(someInput);
 }
 ```
+
+To see working examples pull down the repo and explore WebProxy.Tests
 
 **Project leverages code from https://github.com/BirchCommunications/Birch.Swagger.ProxyGenerator for parsing the swagger document into C#
