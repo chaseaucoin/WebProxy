@@ -6,11 +6,21 @@ namespace WebProxy.Tests
 {
     public interface IValuesController
     {
-        void Delete(int id);
+        string Delete(string value);
+
+        Task<string> DeleteStringAsync([FromBody] string value);
+
         IEnumerable<string> GetList();
+
         string BasicValue(int id);
+
         string Post([FromBody]string value);
-        void Put(int id, [FromBody] string value);
+
+        Task<string> PostStringAsync([FromBody]string value);
+
+        string Put([FromBody] string value);
+        
+        Task<string> PutStringAsync([FromBody] string value);
 
         Task<string> GetStringAsync();
     }

@@ -105,6 +105,14 @@ namespace WebProxy
                     httpmethod = HttpMethod.Get;
                     break;
 
+                case "delete":
+                    httpmethod = HttpMethod.Delete;
+                    break;
+
+                case "put":
+                    httpmethod = HttpMethod.Put;
+                    break;
+
                 default: break;
             }
 

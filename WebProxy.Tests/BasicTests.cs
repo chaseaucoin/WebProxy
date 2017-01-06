@@ -61,11 +61,56 @@ namespace WebProxy.Tests
         }
 
         [TestMethod]
+        public void CanProxyPut()
+        {
+            var expectedResult = Guid.NewGuid().ToString();
+
+            var result = proxy.Put(expectedResult);
+            Assert.AreEqual(result, expectedResult);
+        }
+
+        [TestMethod]
+        public void CanProxyDelete()
+        {
+            var expectedResult = Guid.NewGuid().ToString();
+
+            var result = proxy.Delete(expectedResult);
+            Assert.AreEqual(result, expectedResult);
+        }
+
+        [TestMethod]
+        public async Task CanProxyPostAsync()
+        {
+            var expectedResult = Guid.NewGuid().ToString();
+
+            var result = await proxy.PostStringAsync(expectedResult);
+            Assert.AreEqual(result, expectedResult);
+        }
+
+        [TestMethod]
+        public async Task CanProxyPutAsync()
+        {
+            var expectedResult = Guid.NewGuid().ToString();
+
+            var result = await proxy.PutStringAsync(expectedResult);
+            Assert.AreEqual(result, expectedResult);
+        }
+
+        [TestMethod]
         public async Task CanProxyGetAsync()
         {
             var expectedResult = "value";
 
             var result = await proxy.GetStringAsync();
+            Assert.AreEqual(result, expectedResult);
+        }
+
+        [TestMethod]
+        public async Task CanProxyDeleteAsync()
+        {
+            var expectedResult = Guid.NewGuid().ToString();
+
+            var result = await proxy.DeleteStringAsync(expectedResult);
             Assert.AreEqual(result, expectedResult);
         }
     }
